@@ -1,5 +1,4 @@
 # importing modules
-# Here youtube_dl will be used for downloading audio file
 import youtube_dl
 import tkinter as tk
 from tkinter import *
@@ -9,14 +8,34 @@ from tkinter import filedialog, messagebox
 # Method to select destination downloaded Audio file path
 def setDownloadPath():
     # Location to initial download directory
-    dwldDirectory = filedialog.askdirectory(
+    downloadDirectory = filedialog.askdirectory(
         initialdir="/Users/ritur/Downloads")
     # Setting the directory
-    downloadPath.set(dwldDirectory)
+    downloadPath.set(downloadDirectory)
 
 
 # Downloading function
-def download():
+def downloadvideo():
+    # Get the videoLink from the link label
+    youTube_Link = videoLink.get()
+    # Fetching the downloading directory
+    downloadFolder = downloadPath.get()
+    # Setting the configuration for download file
+    videofiledowloadoptions = {
+        # Saving file name as title to destination
+        'outtmpl': downloadFolder+"/%(title)s.%(ext)s",
+    }
+    # YoutubeDL() takes configuration as argument
+    with youtube_dl.YoutubeDL(videofiledowloadoptions) as videodownload:
+        # Link to the youtube video which have to be downloaded
+        # YoutubeDL().download() takes link as argument
+        videodownload.download([youTube_Link])
+    # Displaying the message
+    messagebox.showinfo("Done", "Video Downloaded Successfully")
+
+
+# Downloading function
+def downloadaudio():
     # Get the videoLink from the link label
     youTube_Link = videoLink.get()
     # Fetching the downloading directory
@@ -44,13 +63,45 @@ def download():
         # YoutubeDL().download() takes link as argument
         audiodownload.download([youTube_Link])
     # Displaying the message
-    messagebox.showinfo("Done", "Converted to Audio")
+    messagebox.showinfo("Done", "Downloaded in Audio Form")
+
+
+# meta information
+def information():
+    # Get the videoLink from the link label
+    youTube_Link = videoLink.get()
+    ydl_opts = {}
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        meta = ydl.extract_info(youTube_Link, download=False) 
+    title=meta['title']
+    uploaddate=meta['upload_date']
+    uploader=meta['uploader']
+    views=meta['view_count']
+    likes=meta['like_count']
+    dislike=meta['dislike_count']
+    # creating a new window
+    # creating tk class object
+    root=Tk()
+    # Setting the size of the window
+    root.geometry("200x150")
+    # Disabling resizing property
+    root.resizable(False, False)
+    # Setting Background Color
+    root.config(background="black")
+    # Setting Title
+    root.title("Video")
+    # setting Label for the informations
+    informationlabel=Label(root,text=f"Title: - {title} \nUpload Date: - {uploaddate}\nUploader: - {uploader}\nView: - {views}\nLikes: - {likes}\nDislike: - {dislike}", bg="green")
+    # Poistioning of the label
+    informationlabel.place(x=30,y=25)
+    # Infinite loop to run the window
+    root.mainloop()
 
 
 # creating tk class object
 root = tk.Tk()
 # Setting the size of the window
-root.geometry("600x100")
+root.geometry("700x100")
 # Disabling resizing property
 root.resizable(False, False)
 # Setting Title
@@ -83,9 +134,17 @@ downloadpathText.grid(row=2, column=1, pady=5, padx=5)
 pathsettingButton = Button(root, text="SetPath", command=setDownloadPath, width=15, bg="green")
 # Poistioning of the Button
 pathsettingButton.grid(row=2, column=2, pady=5, padx=5)
-# Button to run the download method
-dwldButton = Button(root, text="DOWNLOAD AUDIO", command=download, width=30, bg="green")
+# Button to show video information
+informationButton = Button(root, text="Informations", command=information, width=15, bg="green")
 # Poistioning of the Button
-dwldButton.grid(row=3, column=1, pady=5, padx=5)
+informationButton.grid(row=3, column=0, pady=5, padx=5)
+# Button to run the download method
+downloadaudioButton = Button(root, text="DOWNLOAD AUDIO", command=downloadaudio, width=30, bg="green")
+# Poistioning of the Button
+downloadaudioButton.grid(row=3, column=1, pady=5, padx=5)
+# Button to run the download method
+downloadvideoButton = Button(root, text="DOWNLOAD VIDEO", command=downloadvideo, width=30, bg="green")
+# Poistioning of the Button
+downloadvideoButton.grid(row=3, column=2, pady=5)
 # Infinite loop to run the program
 root.mainloop()
