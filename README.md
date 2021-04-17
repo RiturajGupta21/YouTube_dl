@@ -1,2 +1,4 @@
 # CodexProject
-YouTube download to mp3
+YouTube download
+Module Required 'youtube_dl'
+### The module can be installed using the command - pip install youtube_dl
